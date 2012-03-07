@@ -20,14 +20,14 @@
             // the default behavior
             var overideAttributes = new Dictionary<string, List<QvxBaseAttribute>>() {
                     {"Data", new List<QvxBaseAttribute>() { new QvxIgnoreAttribute(true) }},
-                    {"ReplacementStrings", new List<QvxBaseAttribute>() { new QvxIgnoreAttribute(true) }},
+                    {"ReplacementStrings", new List<QvxBaseAttribute>() { new QvxSubfieldAttribute("|") }},
             };
 
             var qvxSer = new QvxSerializer<System.Diagnostics.EventLogEntry>(overideAttributes);       
             #endregion    
          
             #region Request Handler
-            var handler = new QvxDefaultHandleRequestHandler();
+            var handler = new QvxDefaultHandleRequestHandler();         
 
             handler.QvxEditConnectHandler = (c, d) =>
                {
@@ -96,9 +96,16 @@
             }; 
             #endregion
 
+            #region Generic Command Handler
+            var generic = new QvxDefaultQvxGenericCommandHandler();
+            generic.HaveStarField = true; 
+            #endregion
+
             #region Wireup
             // Connect the execute handler to the default handler
             handler.QvxExecuteHandler = excHand.HandleRequest;
+
+            handler.QvxGenericCommandHandler = generic.HandleRequest;
 
             var client = new QvxCommandClient(args);
 
